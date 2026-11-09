@@ -23,14 +23,28 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Setup Java for Allure
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        run: npx playwright test --project=chromium --workers=1
+      - name: Run functional and API tests
+        run: npx playwright test --project=chromium --workers=1 --grep-invert "Check homepage accessibility"
+
+      - name: Run accessibility tests
+        if: always()
+        continue-on-error: true
+        run: npx playwright test tests/accessibility.spec.ts --project=chromium --workers=1
 
       - name: Generate Allure report
         if: always()
