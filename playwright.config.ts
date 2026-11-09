@@ -1,10 +1,12 @@
 
+import 'dotenv/config';
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     testDir: './tests',
 
-    fullyParallel: true,
+    // Run tests sequentially for better stability
+    fullyParallel: false,
 
     reporter: [
         ['list'],
@@ -12,7 +14,7 @@ export default defineConfig({
     ],
 
     use: {
-        baseURL: 'https://automationexercise.com',
+        baseURL: process.env.BASE_URL || 'https://automationexercise.com',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure'

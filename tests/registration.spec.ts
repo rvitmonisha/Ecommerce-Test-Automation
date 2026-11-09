@@ -2,46 +2,47 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { RegistrationPage } from '../pages/RegistrationPage';
-import { userData } from '../test-data/userData';
+import { userDataSet } from '../test-data/userData';
 
-test('Complete new user registration', async ({ page }) => {
+for (const [index, user] of userDataSet.entries()) {
 
-    const home = new HomePage(page);
-    const registration = new RegistrationPage(page);
+    test(`Complete new user registration - User ${index + 1}`, async ({ page }) => {
 
-    // Generate a unique email for every test execution
-    const uniqueEmail = `automation_${Date.now()}@example.com`;
+        const home = new HomePage(page);
+        const registration = new RegistrationPage(page);
 
-    // Step 1: Open website
-    await home.navigate();
+        // Step 1: Open website
+        await home.navigate();
 
-    // Step 2: Open signup page
-    await registration.openSignup();
+        // Step 2: Open signup page
+        await registration.openSignup();
 
-    await expect(page).toHaveURL(/login/);
+        await expect(page).toHaveURL(/login/);
 
-    // Step 3: Enter signup details
-    await registration.enterSignupDetails(
-        userData.name,
-        uniqueEmail
-    );
+        // Step 3: Enter signup details
+        await registration.enterSignupDetails(
+            user.name,
+            user.email
+        );
 
-    // Step 4: Verify account information page
-    await expect(
-        page.locator('h2').filter({
-            hasText: /Enter Account Information/i
-        })
-    ).toBeVisible({ timeout: 15000 });
+        // Step 4: Verify account information page
+        await expect(
+            page.locator('h2').filter({
+                hasText: /Enter Account Information/i
+            })
+        ).toBeVisible({ timeout: 15000 });
 
-    // Step 5: Fill account details
-    await registration.fillAccountInformation(userData);
+        // Step 5: Fill account details
+        await registration.fillAccountInformation(user);
 
-    // Step 6: Create account
-    await registration.createAccount();
+        // Step 6: Create account
+        await registration.createAccount();
 
-    // Step 7: Verify successful registration
-    await expect(
-        page.getByText('Account Created!', { exact: true })
-    ).toBeVisible({ timeout: 15000 });
+        // Step 7: Verify successful registration
+        await expect(
+            page.getByText('Account Created!', { exact: true })
+        ).toBeVisible({ timeout: 15000 });
 
-});
+    });
+
+}

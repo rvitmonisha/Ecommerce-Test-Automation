@@ -1,6 +1,9 @@
 
 import { test, expect } from '@playwright/test';
-import { getProducts } from '../api/productApi';
+import {
+    getProducts,
+    searchProductsWithoutParameter
+} from '../api/productApi';
 
 test('Verify products API response', async () => {
     const data = await getProducts();
@@ -16,4 +19,16 @@ test('Verify products API response', async () => {
     }
 
     console.log('Total products:', data.products.length);
+});
+
+test('Verify API rejects search without required parameter', async () => {
+    const data = await searchProductsWithoutParameter();
+
+    expect(data.responseCode).toBe(400);
+
+    expect(data.message).toContain(
+        'search_product parameter is missing'
+    );
+
+    console.log('Missing parameter handled correctly');
 });
